@@ -2,14 +2,15 @@
 #include "stat.h"
 #include "user.h"
 
-void print_metrics(int pid) {
+void print_metrics(int pid, int prev_run_time) {
+    int total_run_time = get_total_run_time(pid);
+    if (prev_run_time > 0) {
+        total_run_time -= prev_run_time;
+    }
     printf(1, "Process %d metrics:\n", pid);
-    printf(1, "Tickets: -1\n");
-    printf(1, "Run ticks: -1\n");
     printf(1, "Creation time: %d\n", get_creation_time(pid));
-    printf(1, "Start time: %d\n", get_start_time(pid));
     printf(1, "Completion time: %d\n", get_completion_time(pid));
-    printf(1, "Total run time: %d\n", get_total_run_time(pid));
+    printf(1, "Total run time: %d\n", total_run_time);
     printf(1, "Total ready time: %d\n", get_total_ready_time(pid));
     printf(1, "-------------------\n");
 }
@@ -29,8 +30,9 @@ int main(void) {
     printf(1, "Starting FIFO scheduler test with 3 processes...\n");
     int pids[3];
     int work_sizes[3] = {1, 2, 3};  // Different workloads for each process
+    int prev_run_time = 0;  // Track previous process's run time
     
-    // Create and run processes one at a time
+    // Create three processes
     for(int i = 0; i < 3; i++) {
         pids[i] = fork();
         if(pids[i] < 0) {
@@ -44,11 +46,14 @@ int main(void) {
             busy_work(work_sizes[i]);
             printf(1, "Child process %d completed work\n", getpid());
             exit();
-        } else {
-            // Parent process waits for this child to complete before creating next
-            wait();
-            print_metrics(pids[i]);
         }
+    }
+    
+    // Parent process waits for all children
+    for(int i = 0; i < 3; i++) {
+        wait();
+        print_metrics(pids[i], prev_run_time);
+        prev_run_time = get_total_run_time(pids[i]);
     }
     
     exit();
