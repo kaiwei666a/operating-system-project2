@@ -28,11 +28,7 @@ walkpgdir(pde_t *pgdir, const void *va, int alloc)
   } else {
     if(!alloc || (pgtab = (pte_t*)kalloc()) == 0)
       return 0;
-    // Make sure all those PTE_P bits are zero.
     memset(pgtab, 0, PGSIZE);
-    // The permissions here are overly generous, but they can
-    // be further restricted by the permissions in the page table
-    // entries, if necessary.
     *pde = V2P(pgtab) | PTE_P | PTE_W | PTE_U;
   }
   return &pgtab[PTX(va)];
@@ -145,16 +141,16 @@ trap(struct trapframe *tf)
 
     for (int i = 0; i < j; i++) {
       mem = kalloc();
-      cprintf("Allocating New Page (%d)\n", i + 1);
+      cprintf("Allocate New Page (%d)\n", i + 1);
       if (mem == 0) {
-        cprintf("Page allocation failed\n");
+        cprintf("Page Allocation Failed\n");
         exit();
       }
       memset(mem, 0, PGSIZE);
 
 
       if(mappages(myproc()->pgdir, (void*)(PGROUNDDOWN(addr) + i*PGSIZE), PGSIZE, V2P(mem), PTE_W|PTE_U) < 0) {
-        cprintf("Failed to map page\n");
+        cprintf("Failed to Map Page\n");
         kfree(mem);
         exit();
       }
