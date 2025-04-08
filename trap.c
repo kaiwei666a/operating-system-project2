@@ -130,14 +130,29 @@ trap(struct trapframe *tf)
     break;
 
   case T_PGFLT:
-    j = 1;
+    // j = 1;
+    // #ifdef LOCALITY
+    //   cprintf("LOCALITY\n");
+    //   j = 5;
+    // #else
+    //   cprintf("LAZY\n");
+    // #endif
+    // addr = rcr2();
+
+    addr = rcr2();
+
+    pte_t *pte = walkpgdir(myproc()->pgdir, (void*)addr, 0);
+    if(pte && (*pte & PTE_P)) {
+      break;
+    }
+
     #ifdef LOCALITY
       cprintf("LOCALITY\n");
       j = 5;
     #else
       cprintf("LAZY\n");
+      j = 1;
     #endif
-    addr = rcr2();
 
     for (int i = 0; i < j; i++) {
       mem = kalloc();
