@@ -56,7 +56,7 @@ The system determines the allocation strategy using a compile-time flag:
 (2)Otherwise, it defaults to lazy allocation.
 
 In lazy allocation, the system prints "LAZY" and allocates one page in response to a page fault.
-In locality-aware allocation, the system prints "LOCALITY" and allocates three pages: the faulting page and the next four pages.
+In locality-aware allocation, the system prints "LOCALITY" and allocates five pages: the faulting page and the next four pages.
 This behavior is controlled by setting a variable j to either 1 (lazy) or 5 (locality-aware), and looping j times. Within the loop:
 (1)A physical page is allocated using kalloc().
 (2)The page is mapped into the process’s address space using mappages().
