@@ -56,8 +56,8 @@ The system determines the allocation strategy using a compile-time flag:
 (2)Otherwise, it defaults to lazy allocation.
 
 In lazy allocation, the system prints "LAZY" and allocates one page in response to a page fault.
-In locality-aware allocation, the system prints "LOCALITY" and allocates three pages: the faulting page and the next two pages.
-This behavior is controlled by setting a variable j to either 1 (lazy) or 3 (locality-aware), and looping j times. Within the loop:
+In locality-aware allocation, the system prints "LOCALITY" and allocates three pages: the faulting page and the next four pages.
+This behavior is controlled by setting a variable j to either 1 (lazy) or 5 (locality-aware), and looping j times. Within the loop:
 (1)A physical page is allocated using kalloc().
 (2)The page is mapped into the process’s address space using mappages().
 (3)The virtual address is incremented by one page size each iteration to handle the subsequent pages.
@@ -67,7 +67,7 @@ This implementation allows the system to dynamically switch between two memory a
 C.Explain how the page fault print statements from earlier in this section show that your page faulting algorithms are working correctly.
 The print statements described earlier provide clear evidence that our page fault handling mechanisms are functioning correctly.
 In lazy allocation mode, a single "Allocating New Page" message appears for each page fault, confirming that memory is allocated only on demand.
-In locality-aware mode, each page fault triggers multiple allocation messages (e.g., three), indicating that the system is proactively allocating extra pages based on spatial locality.
+In locality-aware mode, each page fault triggers multiple allocation messages, indicating that the system is proactively allocating extra pages based on spatial locality.
 By executing commands, or running custom test programs that gradually access memory, we observe the expected number of allocation messages printed to the console. This consistent behavior confirms that:
 
 (1)Page faults are being correctly detected.
